@@ -1,11 +1,21 @@
 ---
-　　layout: default
-　　title: 我的Blog
-　　---
-　　<h2>{{ page.title }}</h2>
-　　<p>最新文章</p>
-　　<ul>
-　　　　{% for post in site.posts %}
-　　　　　　<li>{{ post.date | date_to_string }} <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
-　　　　{% endfor %}
-　　</ul>
+layout: default
+title: SkyzNote
+---
+    <div class="container">
+        <div class="header">
+			<img src="images/avatar.jpg" width="200px" />
+			<p style="font-weight:400;">Skyz</p>
+			<p>Major in Software Engineering</p>
+		</div>
+    <div class="protal">
+			<center><p style="font-size:28px;font-weight:400">List</p>
+			<ul>
+        　　　　{% for post in site.posts %}
+        　　　　　　<li>{{ post.date | date_to_string }} <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
+        　　　　{% endfor %}
+        　　</ul>
+			</center>
+    </div>
+　　
+    </div>
