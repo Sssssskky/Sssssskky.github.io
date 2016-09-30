@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+　　<html>
+　　<head>
+　　　　<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+       <link rel="stylesheet" href="../../../css/post.css" type="text/css">
+       <link href="http://cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css" rel="stylesheet">
+　　　　<title>MongoDB C++ Driver Windows 64位安装</title>
+　　</head>
+　　<body>
+        <div class="container">
+    　　　　<h1 id="mongodb-c-driver-windows-64">MongoDB C++ Driver Windows 64位安装</h1>
+<h2 id="sep-2016">30 Sep 2016</h2>
+<h3 id="section">1. 吐槽</h3>
+<p>最近在写一个项目打算用MongoDB做数据库，要用C++写后台。
+之前用过Mysql的C驱动，很EZ。
+料想MongoDB应该也差不多。</p>
+
+<h1 id="section-1">呵呵。</h1>
+
+<p>用C++开发的MongoDB竟然没有提供C++直接可以用的二进制接口，果然程序员就是要互相伤害啊！
+网上的安装流程大部分是Linux的，对目前一心一意沉溺在Win10的我很不友好啊。</p>
+
+<p>折腾了两天终于在VS上连接成功了。
+为了防止自己以后再掉坑里，在这留份安装流程。</p>
+
+<h3 id="section-2">2. 安装准备</h3>
+<ol>
+  <li>python2.7
+    <blockquote>
+      <p><a href="http://www.python.org">www.python.org</a></p>
+    </blockquote>
+  </li>
+  <li>scons库，一般python安装后会自带一个，在python27/script里，如果没有的话，手动装一个。
+    <blockquote>
+      <p><a href="http://www.scons.org/">www.scons.org</a></p>
+    </blockquote>
+  </li>
+  <li>boost库，这是一个C++库，MongoDB编写的时候用了这个库，所以。。
+    <blockquote>
+      <p><a href="http://www.boost.org/">www.boost.org</a></p>
+    </blockquote>
+  </li>
+  <li>MongoDB_cxx_driver_legacy，注意选择legacy分支
+    <blockquote>
+      <p><a href="https://github.com/mongodb/mongo-cxx-driver">https://github.com/mongodb/mongo-cxx-driver</a></p>
+    </blockquote>
+  </li>
+  <li>准备boost\，mongo_driver\，mongolib\等三个目录</li>
+  <li>VS2015</li>
+</ol>
+
+<h3 id="section-3">3. 安装步骤</h3>
+<ol>
+  <li>安装python27</li>
+  <li>安装scons库</li>
+  <li>将boost解压到boost\下,将mongo driver解压到mongo_driver\下</li>
+  <li>进入cmd,
+    <blockquote>
+      <p>cd boost\ ,</p>
+    </blockquote>
+
+    <p>运行目录下的bootstrap.bat</p>
+    <blockquote>
+      <p>bootstrap</p>
+    </blockquote>
+  </li>
+  <li>等bootstrap运行完，目录下会多出两个文件b2.exe和bjam.exe</li>
+  <li>运行bjam
+    <blockquote>
+      <p>bjam –build-type=complete toolset=msvc-14.0 threading=multi link=shared address-model=64</p>
+    </blockquote>
+
+    <blockquote>
+      <p>msvc是机器上的vs编译器版本，vs2015为14.0 , Link=shared表示生成的是动态链接库即dll ，最后一个参数表示编译成64位</p>
+    </blockquote>
+  </li>
+  <li>看部电影/吃个饭/睡一觉/撩个妹</li>
+  <li>boost编译完成后，boost\stage\lib文件夹下会出现一些.lib文件</li>
+  <li>进入cmd,
+    <blockquote>
+      <p>cd mongo_driver</p>
+    </blockquote>
+
+    <p>使用scons编译driver,分别是4个命令</p>
+    <blockquote>
+      <p>scons –64 –prefix=”c:\mongolib” –cpppath=”c:\boost” –lib path=”c:\boost\stage\lib” install</p>
+    </blockquote>
+
+    <blockquote>
+      <p>scons –64 –prefix=”c:\mongolib” –cpppath=”c:\boost” –lib path=”c:\boost\stage\lib” install –dbg=on</p>
+    </blockquote>
+
+    <blockquote>
+      <p>scons –64 –prefix=”c:\mongolib” –cpppath=”c:\boost” –lib path=”c:\boost\stage\lib” install  –dynamic-windows –sharedclient</p>
+    </blockquote>
+
+    <blockquote>
+      <p>scons –64 –prefix=”c:\mongolib” –cpppath=”c:\boost” –lib path=”c:\boost\stage\lib” install  –dynamic-windows –sharedclient –dbg=on</p>
+    </blockquote>
+  </li>
+  <li>编译完成后，mongolib\下会出现include目录和lib目录</li>
+</ol>
+
+<h3 id="section-4">4. 使用方法</h3>
+<ol>
+  <li>vs2015新建一个空项目,在项目属性中，在包含目录和库目录里分别将
+    <blockquote>
+      <p>boost\ ，mongolib\include</p>
+    </blockquote>
+
+    <p>和</p>
+    <blockquote>
+      <p>boost\stage\lib  ，mongolib\lib</p>
+    </blockquote>
+
+    <p>目录加进去</p>
+  </li>
+  <li>编写代码
+    <div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;WinSock2.h&gt;
+#include "mongo\client\dbclient.h"
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">mongo</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+ <span class="n">mongo</span><span class="o">::</span><span class="n">client</span><span class="o">::</span><span class="n">initialize</span><span class="p">();</span>
+ <span class="n">DBClientConnection</span> <span class="n">client</span><span class="p">;</span>
+ <span class="n">string</span> <span class="n">ip</span> <span class="o">=</span> <span class="s">"127.0.0.1"</span><span class="p">;</span>
+ <span class="k">try</span> <span class="p">{</span>
+     <span class="n">client</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
+     <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"connect ok"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="k">catch</span> <span class="p">(</span><span class="n">DBException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="n">system</span><span class="p">(</span><span class="s">"pause"</span><span class="p">);</span>
+ <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>编译的时候会通知缺少dll文件，解决办法有两个</p>
+
+    <ol>
+      <li>回到编译boost那一步，将link=shared改成link=static，即生成静态链接，这样的坏处就是自己写出的程序会变很大。。</li>
+      <li>在文件头加一行#define BOOST_ALL_DYN_LINK，然后将缺少的dll文件，从boost\stage\lib目录下拷贝到工程目录下，mongo的dll同理。</li>
+    </ol>
+  </li>
+</ol>
+
+        </div>
+   <script src="http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+   <script >hljs.initHighlightingOnLoad();</script>  
+　　</body>
+　　</html>
