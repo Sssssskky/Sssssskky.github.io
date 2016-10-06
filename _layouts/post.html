@@ -1,16 +1,32 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 　　<html>
 　　<head>
 　　　　<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-       <link rel="stylesheet" href="../../../css/post.css" type="text/css">
-       <link href="http://cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css" rel="stylesheet">
+       <link rel="stylesheet" href="/css/post.css" type="text/css">
+       <link href="/highlight/styles/ocean.css" rel="stylesheet">
 　　　　<title>{{ page.title }}</title>
+       <script src="/highlight/jquery.min.js"></script>
 　　</head>
+<script>
+$(function(){
+    $('pre code').each(function(){
+        var lines = $(this).text().split('\n').length - 1;
+        var $numbering = $('<ul/>').addClass('pre-numbering');
+        $(this)
+            .addClass('has-numbering')
+            .parent()
+            .append($numbering);
+        for(i=1;i<=lines;i++){
+            $numbering.append($('<li/>').text(i));
+        }
+    });
+});
+</script>
 　　<body>
         <div class="container">
     　　　　{{ content }}
         </div>
-   <script src="http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
-   <script >hljs.initHighlightingOnLoad();</script>  
+   <script src="/highlight/highlight.js"></script>
+   <script >hljs.initHighlightingOnLoad();</script>
 　　</body>
 　　</html>
